@@ -16,6 +16,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockMultiPlaceEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityPlaceEvent;
+import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -107,6 +108,16 @@ public final class ChunkSync extends JavaPlugin implements Listener {
 
             data.setBlockData(blockData, location);
             applyChangeToOtherChunks(blockData, location);
+        });
+    }
+
+    @EventHandler
+    public void onPortalCreate(PortalCreateEvent e) {
+        e.getBlocks().forEach(blockState -> {
+            Location location = blockState.getLocation();
+            BlockData blockData = location.getBlock().getBlockData();
+
+            data.setBlockData(blockData, location);
         });
     }
 
