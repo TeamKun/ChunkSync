@@ -71,7 +71,7 @@ public class Utils {
             if (craftBlock.getWorld() instanceof net.minecraft.server.v1_16_R3.World) {
                 ((net.minecraft.server.v1_16_R3.World) craftBlock.getWorld()).removeTileEntity(craftBlock.getPosition());
             } else {
-                setTypeAndDataWithoutLight((World) craftBlock.getWorld(), craftBlock.getPosition(), Blocks.AIR.getBlockData(), 0, 0);
+                setTypeAndDataWithoutLight(craftBlock.getCraftWorld().getHandle(), craftBlock.getPosition(), Blocks.AIR.getBlockData(), 0, 0);
             }
         }
 
