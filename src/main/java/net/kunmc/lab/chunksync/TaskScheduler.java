@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class TaskScheduler {
     private final Deque<BukkitRunnable> deque = new ConcurrentLinkedDeque<>();
-    public int numberOfExecutionsPerSec = 12500;
+    public int numberOfExecutionsPerSec = 25000;
 
     public TaskScheduler(JavaPlugin plugin) {
         new BukkitRunnable() {
