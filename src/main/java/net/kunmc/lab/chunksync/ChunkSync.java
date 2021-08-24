@@ -19,11 +19,12 @@ import java.util.Arrays;
 
 public final class ChunkSync extends JavaPlugin implements Listener {
     private final ChunkSyncData data = new ChunkSyncData();
-    private int setBlockPerTick = 8;
+    private TaskScheduler scheduler;
 
     @Override
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
+        scheduler = new TaskScheduler(this);
     }
 
     @Override
@@ -33,21 +34,20 @@ public final class ChunkSync extends JavaPlugin implements Listener {
     @EventHandler
     public void onChunkLoad(ChunkLoadEvent e) {
         Chunk chunk = e.getChunk();
-        int count = 0;
-        for (int x = 0; x < 16; x++) {
+
+        for (int y = 0; y < 256; y++) {
             for (int z = 0; z < 16; z++) {
-                for (int y = 0; y < 256; y++) {
+                for (int x = 0; x < 16; x++) {
                     Block block = chunk.getBlock(x, y, z);
                     BlockData chunkBlockData = block.getBlockData();
                     BlockData globalBlockData = data.getBlockData(x, y, z, block.getWorld().getEnvironment());
                     if (globalBlockData != null && !chunkBlockData.equals(globalBlockData)) {
-                        new BukkitRunnable() {
+                        scheduler.offer(new BukkitRunnable() {
                             @Override
                             public void run() {
                                 Utils.setTypeAndData(block, globalBlockData, true);
                             }
-                        }.runTaskLater(this, count % setBlockPerTick);
-                        count++;
+                        });
                     }
                 }
             }
@@ -85,20 +85,18 @@ public final class ChunkSync extends JavaPlugin implements Listener {
             }
         });
 
-        int count = 0;
         Location chunkOffset = Utils.toChunkOffset(location.clone());
         for (Chunk chunk : chunks) {
             if (chunk.equals(location.getChunk())) {
                 continue;
             }
 
-            new BukkitRunnable() {
+            scheduler.offer(new BukkitRunnable() {
                 @Override
                 public void run() {
                     Utils.setTypeAndData(chunk.getBlock(chunkOffset.getBlockX(), chunkOffset.getBlockY(), chunkOffset.getBlockZ()), blockData, true);
                 }
-            }.runTaskLater(this, count % setBlockPerTick);
-            count++;
+            });
         }
     }
 }
