@@ -1,5 +1,6 @@
 package net.kunmc.lab.chunksync;
 
+import io.papermc.paper.event.packet.PlayerChunkLoadEvent;
 import net.kunmc.lab.chunksync.util.Utils;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -10,7 +11,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -32,7 +32,7 @@ public final class ChunkSync extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onChunkLoad(ChunkLoadEvent e) {
+    public void onChunkLoad(PlayerChunkLoadEvent e) {
         Chunk chunk = e.getChunk();
 
         for (int y = 0; y < 256; y++) {
@@ -94,7 +94,8 @@ public final class ChunkSync extends JavaPlugin implements Listener {
             scheduler.offer(new BukkitRunnable() {
                 @Override
                 public void run() {
-                    Utils.setTypeAndData(chunk.getBlock(chunkOffset.getBlockX(), chunkOffset.getBlockY(), chunkOffset.getBlockZ()), blockData, true);
+                    Block block = chunk.getBlock(chunkOffset.getBlockX(), chunkOffset.getBlockY(), chunkOffset.getBlockZ());
+                    Utils.setTypeAndData(block, blockData, true);
                 }
             });
         }
