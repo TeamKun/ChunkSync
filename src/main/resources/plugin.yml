@@ -2,3 +2,7 @@ name: ChunkSync
 version: ${project.version}
 main: net.kunmc.lab.chunksync.ChunkSync
 api-version: 1.16
+commands:
+  chunksync:
+    usage: |-
+      /chunksync numberOfProcessedBlocksPerSec [IntegerValue]

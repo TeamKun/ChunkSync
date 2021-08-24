@@ -1,12 +1,14 @@
 package net.kunmc.lab.chunksync;
 
 import io.papermc.paper.event.packet.PlayerChunkLoadEvent;
+import net.kunmc.lab.chunksync.command.CommandHandler;
 import net.kunmc.lab.chunksync.util.Utils;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -19,10 +21,13 @@ import java.util.Arrays;
 
 public final class ChunkSync extends JavaPlugin implements Listener {
     private final ChunkSyncData data = new ChunkSyncData();
-    private TaskScheduler scheduler;
+    public TaskScheduler scheduler;
 
     @Override
     public void onEnable() {
+        TabExecutor tabExecutor = new CommandHandler(this);
+        getServer().getPluginCommand("chunksync").setExecutor(tabExecutor);
+        getServer().getPluginCommand("chunksync").setTabCompleter(tabExecutor);
         getServer().getPluginManager().registerEvents(this, this);
         scheduler = new TaskScheduler(this);
     }
