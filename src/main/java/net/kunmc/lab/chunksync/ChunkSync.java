@@ -12,6 +12,7 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -74,6 +75,16 @@ public final class ChunkSync extends JavaPlugin implements Listener {
 
         data.setBlockData(Material.AIR.createBlockData(), location);
         applyChangeToOtherChunks(Material.AIR.createBlockData(), location);
+    }
+
+    @EventHandler
+    public void onBlockExplode(BlockExplodeEvent e) {
+        e.blockList().forEach(b -> {
+            Location location = b.getLocation();
+
+            data.setBlockData(Material.AIR.createBlockData(), location);
+            applyChangeToOtherChunks(Material.AIR.createBlockData(), location);
+        });
     }
 
     public void applyChangeToOtherChunks(BlockData blockData, Location location) {

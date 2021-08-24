@@ -23,13 +23,6 @@ public class TaskScheduler {
                 }
             }
         }.runTaskTimerAsynchronously(plugin, 0, 0);
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                Bukkit.getLogger().info(deque.size() + " ");
-            }
-        }.runTaskTimer(plugin, 0, 20);
     }
 
     public void offer(BukkitRunnable runnable) {
