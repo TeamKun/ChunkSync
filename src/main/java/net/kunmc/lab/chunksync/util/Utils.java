@@ -1,6 +1,7 @@
 package net.kunmc.lab.chunksync.util;
 
 import net.minecraft.server.v1_16_R3.*;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.v1_16_R3.block.CapturedBlockState;
@@ -85,5 +86,10 @@ public class Utils {
 
             return success;
         }
+    }
+
+    public static Location toChunkOffset(Location location) {
+        org.bukkit.Chunk chunk = location.getChunk();
+        return location.subtract(chunk.getX() * 16, 0, chunk.getZ() * 16);
     }
 }
