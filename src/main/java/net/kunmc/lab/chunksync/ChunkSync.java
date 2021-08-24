@@ -80,7 +80,7 @@ public final class ChunkSync extends JavaPlugin implements Listener {
         data.setBlockData(Material.AIR.createBlockData(), location);
         applyChangeToOtherChunks(Material.AIR.createBlockData(), location);
     }
-    
+
     @EventHandler
     public void onBlockDestroy(BlockDestroyEvent e) {
         BlockData blockData = e.getNewState();
@@ -127,6 +127,10 @@ public final class ChunkSync extends JavaPlugin implements Listener {
         Location chunkOffset = Utils.toChunkOffset(location.clone());
         for (Chunk chunk : chunks) {
             if (chunk.equals(location.getChunk())) {
+                continue;
+            }
+
+            if (!chunk.getWorld().getEnvironment().equals(location.getWorld().getEnvironment())) {
                 continue;
             }
 
