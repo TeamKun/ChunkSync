@@ -25,6 +25,19 @@ public class CommandHandler implements TabExecutor {
             return false;
         }
 
+        switch (args[0]) {
+            case "numberOfProcessedBlocksPerSec":
+                numberOfProcessedBlocksPerSec(sender, args);
+                break;
+            case "syncLiquid":
+                syncLiquid(sender, args);
+                break;
+        }
+
+        return true;
+    }
+
+    private void numberOfProcessedBlocksPerSec(CommandSender sender, String[] args) {
         if (args.length == 1) {
             sender.sendMessage(ChatColor.GREEN + "numberOfProcessedBlocksPerSecの値は" + plugin.scheduler.numberOfExecutionsPerSec + "です.");
         } else {
@@ -32,11 +45,22 @@ public class CommandHandler implements TabExecutor {
                 plugin.scheduler.numberOfExecutionsPerSec = Integer.parseInt(args[1]);
                 sender.sendMessage(ChatColor.GREEN + "numberOfProcessedBlocksPerSecの値を" + plugin.scheduler.numberOfExecutionsPerSec + "に設定しました.");
             } catch (Exception e) {
-                sender.sendMessage(ChatColor.RED + "IntegerValueの値が不正です.");
+                sender.sendMessage(ChatColor.RED + "valueの値が不正です.");
             }
         }
+    }
 
-        return true;
+    private void syncLiquid(CommandSender sender, String[] args) {
+        if (args.length == 1) {
+            sender.sendMessage(ChatColor.GREEN + "syncLiquidの値は" + ChunkSync.shouldSyncLiquid + "です.");
+        } else {
+            try {
+                ChunkSync.shouldSyncLiquid = Boolean.parseBoolean(args[1]);
+                sender.sendMessage(ChatColor.GREEN + "syncLiquidの値を" + ChunkSync.shouldSyncLiquid + "に設定しました.");
+            } catch (Exception e) {
+                sender.sendMessage(ChatColor.RED + "valueの値が不正です.");
+            }
+        }
     }
 
     @Override
@@ -44,10 +68,11 @@ public class CommandHandler implements TabExecutor {
         List<String> completion = new ArrayList<>();
         if (args.length == 1) {
             completion.add("numberOfProcessedBlocksPerSec");
+            completion.add("syncLiquid");
         }
 
         if (args.length == 2) {
-            completion.add("[IntegerValue]");
+            completion.add("[value]");
         }
 
         return completion.stream().filter(x -> x.startsWith(args[args.length - 1])).collect(Collectors.toList());

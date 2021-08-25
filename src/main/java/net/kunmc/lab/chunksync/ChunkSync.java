@@ -16,6 +16,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockMultiPlaceEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityPlaceEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -25,6 +27,7 @@ import java.util.Arrays;
 public final class ChunkSync extends JavaPlugin implements Listener {
     private final ChunkSyncData data = new ChunkSyncData();
     public TaskScheduler scheduler;
+    public static boolean shouldSyncLiquid = false;
 
     @Override
     public void onEnable() {
@@ -76,6 +79,33 @@ public final class ChunkSync extends JavaPlugin implements Listener {
 
         data.setBlockData(blockData, location);
         applyChangeToOtherChunks(blockData, location);
+    }
+
+    @EventHandler
+    public void onPlayerBucketEmpty(PlayerBucketEmptyEvent e) {
+        if (shouldSyncLiquid) {
+            BlockData blockData;
+            if (e.getBucket().equals(Material.LAVA_BUCKET)) {
+                blockData = Material.LAVA.createBlockData();
+            } else {
+                blockData = Material.WATER.createBlockData();
+            }
+
+            Location location = e.getBlock().getLocation();
+
+            data.setBlockData(blockData, location);
+            applyChangeToOtherChunks(blockData, location);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerBucketFill(PlayerBucketFillEvent e) {
+        if (shouldSyncLiquid) {
+            Location location = e.getBlock().getLocation();
+
+            data.setBlockData(Material.AIR.createBlockData(), location);
+            applyChangeToOtherChunks(Material.AIR.createBlockData(), location);
+        }
     }
 
     @EventHandler
