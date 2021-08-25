@@ -31,8 +31,10 @@ public class ChunkSyncData {
         switch (environment) {
             case NORMAL:
                 blocksForOverworld[convertCoordinate(x, y, z)] = blockData;
+                break;
             case NETHER:
                 blocksForNether[convertCoordinate(x, y, z)] = blockData;
+                break;
             default:
                 blocksForEnd[convertCoordinate(x, y, z)] = blockData;
         }

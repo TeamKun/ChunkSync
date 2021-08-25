@@ -6,6 +6,7 @@ import net.kunmc.lab.chunksync.util.Utils;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.command.TabExecutor;
@@ -43,13 +44,14 @@ public final class ChunkSync extends JavaPlugin implements Listener {
     @EventHandler
     public void onChunkLoad(PlayerChunkLoadEvent e) {
         Chunk chunk = e.getChunk();
+        World.Environment environment = chunk.getWorld().getEnvironment();
 
         for (int y = 0; y < 256; y++) {
             for (int z = 0; z < 16; z++) {
                 for (int x = 0; x < 16; x++) {
                     Block block = chunk.getBlock(x, y, z);
                     BlockData chunkBlockData = block.getBlockData();
-                    BlockData globalBlockData = data.getBlockData(x, y, z, block.getWorld().getEnvironment());
+                    BlockData globalBlockData = data.getBlockData(x, y, z, environment);
                     if (globalBlockData != null && !chunkBlockData.equals(globalBlockData)) {
                         scheduler.offer(new BukkitRunnable() {
                             @Override
