@@ -22,14 +22,17 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.Arrays;
+import java.util.*;
 
 public final class ChunkSync extends JavaPlugin implements Listener {
     private final ChunkSyncData data = new ChunkSyncData();
-    public TaskScheduler scheduler;
+    public static TaskScheduler scheduler;
     public static boolean shouldSyncLiquid = false;
+    public static int applicableChunkDistance = 10;
+    public static Set<UUID> enabledPlayerUUIDList = new HashSet<>();
 
     @Override
+
     public void onEnable() {
         TabExecutor tabExecutor = new CommandHandler(this);
         getServer().getPluginCommand("chunksync").setExecutor(tabExecutor);
@@ -70,6 +73,10 @@ public final class ChunkSync extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent e) {
+        if (!enabledPlayerUUIDList.contains(e.getPlayer().getUniqueId())) {
+            return;
+        }
+
         BlockData blockData = e.getBlock().getBlockData();
         Location location = e.getBlock().getLocation();
 
@@ -83,6 +90,10 @@ public final class ChunkSync extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerBucketEmpty(PlayerBucketEmptyEvent e) {
+        if (!enabledPlayerUUIDList.contains(e.getPlayer().getUniqueId())) {
+            return;
+        }
+
         if (shouldSyncLiquid) {
             BlockData blockData;
             if (e.getBucket().equals(Material.LAVA_BUCKET)) {
@@ -100,6 +111,10 @@ public final class ChunkSync extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerBucketFill(PlayerBucketFillEvent e) {
+        if (!enabledPlayerUUIDList.contains(e.getPlayer().getUniqueId())) {
+            return;
+        }
+
         if (shouldSyncLiquid) {
             Location location = e.getBlock().getLocation();
 
@@ -110,6 +125,10 @@ public final class ChunkSync extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e) {
+        if (!enabledPlayerUUIDList.contains(e.getPlayer().getUniqueId())) {
+            return;
+        }
+
         Location location = e.getBlock().getLocation();
 
         data.setBlockData(Material.AIR.createBlockData(), location);
@@ -118,6 +137,10 @@ public final class ChunkSync extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onEntityPlace(EntityPlaceEvent e) {
+        if (!enabledPlayerUUIDList.contains(e.getPlayer().getUniqueId())) {
+            return;
+        }
+
         BlockData blockData = e.getBlock().getBlockData();
         Location location = e.getBlock().getLocation();
 
@@ -127,6 +150,10 @@ public final class ChunkSync extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onBlockMultiPlace(BlockMultiPlaceEvent e) {
+        if (!enabledPlayerUUIDList.contains(e.getPlayer().getUniqueId())) {
+            return;
+        }
+
         e.getReplacedBlockStates().forEach(blockState -> {
             Location location = blockState.getLocation();
             BlockData blockData = location.getBlock().getBlockData();
@@ -137,8 +164,8 @@ public final class ChunkSync extends JavaPlugin implements Listener {
     }
 
     public void applyChangeToOtherChunks(BlockData blockData, Location location) {
-        Chunk[] chunks = location.getWorld().getLoadedChunks();
-        Arrays.parallelSort(chunks, (x, y) -> {
+        List<Chunk> chunkList = new ArrayList<>(Arrays.asList(location.getWorld().getLoadedChunks()));
+        chunkList.sort((x, y) -> {
             Vector vec = new Vector(location.getChunk().getX(), 0, location.getChunk().getZ());
             double a = new Vector(x.getX(), 0, x.getZ()).distance(vec);
             double b = new Vector(y.getX(), 0, y.getZ()).distance(vec);
@@ -150,8 +177,13 @@ public final class ChunkSync extends JavaPlugin implements Listener {
             }
         });
 
+        chunkList.removeIf(x -> {
+            Chunk origin = location.getChunk();
+            return new Vector(x.getX(), 0, x.getZ()).distance(new Vector(origin.getX(), 0, origin.getZ())) > applicableChunkDistance;
+        });
+
         Location chunkOffset = Utils.toChunkOffset(location.clone());
-        for (Chunk chunk : chunks) {
+        for (Chunk chunk : chunkList) {
             if (chunk.equals(location.getChunk())) {
                 continue;
             }

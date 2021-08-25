@@ -6,4 +6,6 @@ commands:
   chunksync:
     usage: |-
       /chunksync numberOfProcessedBlocksPerSec [IntegerValue]
+      /chunksync applicableChunkDistance [IntegerValue]
+      /chunksync syncLiquid [BooleanValue]
     permission: op

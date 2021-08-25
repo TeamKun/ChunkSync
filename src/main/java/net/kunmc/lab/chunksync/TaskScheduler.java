@@ -28,4 +28,12 @@ public class TaskScheduler {
     public void offer(BukkitRunnable runnable) {
         deque.offer(runnable);
     }
+
+    public void clear() {
+        deque.clear();
+    }
+
+    public int amount() {
+        return deque.size();
+    }
 }
