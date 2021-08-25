@@ -122,10 +122,6 @@ public final class ChunkSync extends JavaPlugin implements Listener {
                 continue;
             }
 
-            if (!chunk.getWorld().getEnvironment().equals(location.getWorld().getEnvironment())) {
-                continue;
-            }
-
             scheduler.offer(new BukkitRunnable() {
                 @Override
                 public void run() {
