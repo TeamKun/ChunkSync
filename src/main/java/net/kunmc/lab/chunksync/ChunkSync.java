@@ -1,6 +1,5 @@
 package net.kunmc.lab.chunksync;
 
-import com.destroystokyo.paper.event.block.BlockDestroyEvent;
 import io.papermc.paper.event.packet.PlayerChunkLoadEvent;
 import net.kunmc.lab.chunksync.command.CommandHandler;
 import net.kunmc.lab.chunksync.util.Utils;
@@ -16,7 +15,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockMultiPlaceEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityPlaceEvent;
-import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -83,15 +81,6 @@ public final class ChunkSync extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onBlockDestroy(BlockDestroyEvent e) {
-        BlockData blockData = e.getNewState();
-        Location location = e.getBlock().getLocation();
-
-        data.setBlockData(blockData, location);
-        applyChangeToOtherChunks(blockData, location);
-    }
-
-    @EventHandler
     public void onEntityPlace(EntityPlaceEvent e) {
         BlockData blockData = e.getBlock().getBlockData();
         Location location = e.getBlock().getLocation();
@@ -108,16 +97,6 @@ public final class ChunkSync extends JavaPlugin implements Listener {
 
             data.setBlockData(blockData, location);
             applyChangeToOtherChunks(blockData, location);
-        });
-    }
-
-    @EventHandler
-    public void onPortalCreate(PortalCreateEvent e) {
-        e.getBlocks().forEach(blockState -> {
-            Location location = blockState.getLocation();
-            BlockData blockData = location.getBlock().getBlockData();
-
-            data.setBlockData(blockData, location);
         });
     }
 
