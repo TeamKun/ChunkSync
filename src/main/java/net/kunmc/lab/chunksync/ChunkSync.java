@@ -70,6 +70,10 @@ public final class ChunkSync extends JavaPlugin implements Listener {
         BlockData blockData = e.getBlock().getBlockData();
         Location location = e.getBlock().getLocation();
 
+        if (blockData.getMaterial().equals(Material.FIRE)) {
+            return;
+        }
+
         data.setBlockData(blockData, location);
         applyChangeToOtherChunks(blockData, location);
     }
